@@ -1,0 +1,13 @@
+.invalid {
+    margin: 0px;
+    margin-left: 20px;
+    color: #c13a3a
+}
+.myform {
+    margin: 0px;
+    margin-top: 20px;
+}
+
+.invalidinput {
+    border: 1px solid red
+}

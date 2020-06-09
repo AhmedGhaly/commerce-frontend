@@ -1,48 +1,96 @@
 import React, { Component } from 'react'
-import Axios from 'axios';
 
-import Card from '../Cards/Card'
-import Form from "./form";
+import './auth.css'
+import * as validate from './validation/validation'
+import Input from '../layouts/Input/Input'
+import Axios from '../../Axios'
+import { Link } from 'react-router-dom'
+
 
 class Login extends Component {
     state = {
         userInfo: {
-            password: '',
-            email: ''
-        }, 
-        token: null,
-        loding: true
+            email:  {
+                id: 2,
+                inputType: 'input',
+                config: {
+                    placeholder: 'enter the email',
+                    type: 'email',
+                    name: 'email',
+                    value: ''
+                },
+                validator: {
+                    isRequire: true,
+                    isEmail: true
+                },
+                valid: false,
+                isTouched: false
+            },
+            password: {
+                id: 1,
+                inputType: 'input',
+                config: {
+                    placeholder: 'enter the password',
+                    type: 'password',
+                    name: 'password',
+                    value: ''
+                },
+                validator: {
+                    isRequire: true
+                },
+                valid: false,
+                isTouched: false
+            }
+        }
     }
 
-
-    onsubmitHandler = (event) => {
+    onLoginHandler = (event, userInfo, props) => {
         event.preventDefault()
-        const data = this.state.userInfo
-        Axios.post('http://localhost:8080/login', data).then(res => {
-            this.setState({token: res.data.token})
-            this.setState({loding: false})
+        const userInf = {email: userInfo.email.config.value, password: userInfo.password.config.value}
+        Axios.post('/login', userInf).then(res => {
+            localStorage.setItem('token', res.data.token)
+            localStorage.setItem('userId', res.data.userId)
+            console.log(res.data)
+            window.location.reload()
+        }).catch(err => {
         })
+
     }
 
+    
     onChangeHandler = (event) => {
         const name = event.target.name
         const userInfo = {...this.state.userInfo}
-        userInfo[name] = event.target.value
+        userInfo[name].config.value = event.target.value
+        userInfo[name].isTouched = true
+        userInfo[name].valid = validate.validate(userInfo[name].config.value, userInfo[name].validator)
         this.setState({userInfo: userInfo})
-
     }
-    
+
     render() {
-        let card = null;
-        if(this.state.loding === false)
-            card = <Card token={this.state.token} />
+
+        let input = Object.keys(this.state.userInfo).map(prop => {
+            return <Input 
+                    isTouched={this.state.userInfo[prop].isTouched}
+                    isValid={this.state.userInfo[prop].valid}
+                    key={this.state.userInfo[prop].id}
+                    {...this.state.userInfo[prop]}
+                    onChange={(event) => this.onChangeHandler(event)} />
+        })
+
         return (
             <React.Fragment>
-                <Form url='login' {...this.state.userInfo} change={(event) => this.onChangeHandler(event)} onSubmit={(event) => this.onsubmitHandler(event)} />
-                {card}
+                <form onSubmit={(event) => this.onLoginHandler(event, this.state.userInfo, {...this.props})}  className='text-center'>
+                {input}
+                    <input className='mybtn btn btn-outline-primary' value='login' type='submit' />
+                    <br/>
+                    <Link to='/signup'>signup</Link><br/>
+                    <Link to='/forget'>forget your password</Link>
+                </form>
             </React.Fragment>
         )
     }
 }
+
 
 export default Login

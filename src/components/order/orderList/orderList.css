@@ -1,0 +1,11 @@
+.card {
+    margin: auto;
+    margin-top: 20px;
+    box-shadow: 0px 1px 6px 3px #6563;
+    text-align: center;
+}
+.price_product {
+    font-size: 16px;
+    font-weight: 700;
+    color: #a864a8;
+}

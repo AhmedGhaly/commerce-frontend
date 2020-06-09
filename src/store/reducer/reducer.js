@@ -1,8 +1,13 @@
+
 const intialState = {
-    product: []
+    order: [],
+    ordercounter: 0,
+    products: []
 }
 
-const reducer = (state, action) => {
-
+const reducer = (state=intialState, action) => {
+    switch(action.type) {
+        default: return state
+    }
 }
 export default reducer
